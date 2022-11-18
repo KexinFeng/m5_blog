@@ -1,10 +1,12 @@
-# The transfer learning package in DeepJavaLibrary
+# The transfer learning package in DeepJavaLibrary (DJL)
 
 Transfer learning is a popular technique that focuses on storing knowledge gained in solving one problem and applying it to a different but related problem. This is usually implemented by using a large pre-trained model to get an embedding vector, which can be thought of as a representation of the data, and then fed into the subsequent models. Thus, through transfer learing, users can benifit from the large pre-trained model and solve their own customized problem. A direct benifit is that the required training data size is significantly reduced with transfer learning, which helps to save the expensive data annotation cost.
 
 Transfer learning has a broad variaty of applications, including general game playing, text classification, medical imaging, spam filtering, and many more. In this blogpost, we will demonstrate the transfer learnig tool package with an image classification task, a generic task in computer vision. We will also introduce two frameworks: Deep Java Library (DJL) and ATLearn.
 
-[DJL](https://github.com/deepjavalibrary/djl) is a deep learning framework designed for Java developers. It is compatible with the existing popular deep learning engines, like PyTorch, MXNet, and Tensorflow, and enables users to easily train and deploy deep learning models in their Java application. So the transfer learning package introduced here make it possible for the Java developers to directly benifit from the large models pre-trained in python. [ATLearn](https://github.com/awslabs/atlearn) is a small transfer learning toolkit for python users. It provides various APIs, transfer learning algorithms and model zoo to enable easy building of models for various customized tasks. Here, for DJL transfer learning package, the ATLearn is mainly used to modify an large pretrained model (e.g. remove the last neural network layer) and export a traced model file, which will be loaded in DJL. 
+[DJL](https://github.com/deepjavalibrary/djl) is a deep learning framework designed for Java developers. It is compatible with the existing popular deep learning engines, like PyTorch, MXNet, and Tensorflow, and enables users to easily train and deploy deep learning models in their Java application. So the transfer learning package introduced here make it possible for the Java developers to directly benifit from the large models pre-trained in python.
+
+[ATLearn](https://github.com/awslabs/atlearn) is a small transfer learning toolkit for python users. It provides various APIs, transfer learning algorithms and model zoo to enable easy building of models for various customized tasks. Here, for DJL transfer learning package, the ATLearn is mainly used to modify an large pretrained model (e.g. remove the last neural network layer) and export a traced model file, which will be loaded in DJL. 
 
 A by-product of this transfer learning feature is that the model retraining, which allows model to improve and be fine-tuned with new data. This will be mentioned in the following.
 
@@ -121,7 +123,7 @@ int batchSize = 32;
 Shape inputShape = new Shape(batchSize, 3, 224, 224);
 trainer.initialize(inputShape);
 ```
-In this step, the parameters' shape in each blocks will be specified. Here the `inputShape` has to be known beforehand.
+In this step, the parameters' shape and initial value in each blocks will be specified. Here the `inputShape` has to be known beforehand.
 
 **Data loading.** The data is loaded and preprocessed with the following function.
 ```java
@@ -151,7 +153,7 @@ private static RandomAccessDataset getData(String usage, int batchSize)
 ```
 Here, the data are also preprocessed with the commonly used normalization and randomization. The randomizations are training only. 
 
-**Model training and export.** Finally, we can run the model training with `Easytrain.fit`, and save the model for prediction. In the end, the `model.close()` and `embedding.close()` are called. In DJL, during the creation of `Model` and `ZooModel<NDList, NDList>`, the native resources (e.g. memories in the asigned in PyTorch) are allocated. They are managed by DJL with autoclosable class.
+**Model training and export.** Finally, we can run the model training with `Easytrain.fit`, and save the model for prediction. In the end, the `model.close()` and `embedding.close()` are called. In DJL, during the creation of `Model` and `ZooModel<NDList, NDList>`, the native resources (e.g. memories in the asigned in PyTorch) are allocated. These resources are managed by `NDManager` which inherits `AutoCloseable` class.
 ```java
 EasyTrain.fit(trainer, numEpoch, datasetTrain, datasetTest);
 model.save(Paths.get("SAVE_PATH"), "transferFreshFruit");
@@ -173,4 +175,33 @@ Here, you can monitor the training and validation accuracy and loss descent.
 The complete **source code** of the demo is available [here](https://github.com/deepjavalibrary/djl/blob/master/examples/src/main/java/ai/djl/examples/training/transferlearning/TransferFreshFruit.java).
 
 ### Experiment on the reduction of the training data size
+As mentioned in the introduction, the key advantage of transfer learning is that it leverage the pretrained model, and thus it can be trained on a relatively small dataset. This will save the cost in data collection and annotation. In this section, we measure the validation accuracy v.s. training data size on the FreshFruit dataset. The full experiment code is availale [here](https://gist.github.com/KexinFeng/d9c0a244d0597e6c6e161c1c1c2db569).
+
+The minor difference between the experiment code and the demonstration code above is the control over the training data size and randomization of the chosen subdataset. It is implemented below. `cut` is the size of the training data.
+```java
+List<Long> batchIndexList = new ArrayList<>();
+try (NDManager manager = NDManager.newBaseManager()) {
+    NDArray indices = manager.randomPermutation(dataset.size());
+    NDArray batchIndex = indices.get(":{}", cut);
+    for (long index : batchIndex.toLongArray()) {
+        batchIndexList.add(index);
+    }
+}
+return dataset.subDataset(batchIndexList);
+```
+
+The result of validation accuracy v.s. training data size is below.
+
+<figcaption>Fresh/rotten banana classification:<figcaption>
+<img src="./banana.jpg" width="500">
+
+<figcaption>Fresh/rotten apple classification:<figcaption>
+<img src="./apple.jpg" width="500" alt="apple">
+
+Here, we have tested two scenarios: freeze ResNet layers and update only MLP and update all layers. As expected, the stable accuracy of latter is slightly better than that of the former, since the ResNet parameter is also fine-tuned by the data. We can also see that the accuracy of the banana data reaches stable 0.95 with 30 samples, the accuracy of the apple data reaches stable 0.95 with around 70 samples. They are both relatively smaller than the provided training data size by Kaggle, which is over 1000. This verifies the smallness of the required training dataset.
+
+## Summary
+In this blogpost, we demonstrate how to build a transfer leanring model in DJL for an image classification task. This process is also applicable in model retraining. Finally, we also present the experiment on how much the training data set can be reduced. When people need to collect and annotate data, this offers a reference on the minimum required data size.
+
+
 
