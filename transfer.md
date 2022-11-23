@@ -1,4 +1,4 @@
-# Blazing fast training with large models and small dataset for Java applications
+# Blazing fast training with small dataset for Java applications
 
 Deep learning has shown its strong power in solving many problems in various areas like CV, NLP, reinforcement learning, etc, and there exists numerous examples of its successful applications. However, for a very specific customerized task, like rotten fruit detection in a grocery store, or mask wearing detection in a public place, there are still many difficulties in utilizing it. For example, the data collection and annotation can be expensive and time consuming. Also model designing and experimenting will face many uncertainties. In this blogpost, we will addresses the above two issues with the new transfer learning feature in DeepJavaLibrary (DJL). Our model achieves 90% accuracy on image classification using less than 100 images. You will learn how this is achieved in the next 10 minutes.
 <!-- You will learn how to benifit from the large pretrained models in your Java applications in 10 minutes. -->
