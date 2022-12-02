@@ -7,7 +7,7 @@ Deep learning has shown its strong power in solving problems in various areas li
 In this blogpost, we will address the above two issues with **transfer learning**, and demonstrate it on a rotten fruit detection task. Our result shows that the model can achieve **95%** accuracy on image classification with less than **100** images. We will also show how easily this is implemented in Java environment.
 You will learn how this is achieved in the next 10 minutes.
 
-To solve the issues mentioned above, we will use the transfer learning feature in DeepJavaLibrary ([DJL](https://github.com/deepjavalibrary/djl)). DJL is a deep learning library designed for Java developers, compatible with the existing deep learning engines, like PyTorch, MXNet, and Tensorflow, and enables both model training and inference in Java. We will also use [ATLearn](https://github.com/awslabs/atlearn) to edit and import the large pre-train model. ATLearn is a light weighted transfer learning toolkit, with various APIs, algorithms and model zoo, provided for python users. 
+To solve the issues mentioned above, we will use the transfer learning feature in DeepJavaLibrary ([DJL](https://github.com/deepjavalibrary/djl)). DJL is a deep learning library designed for Java developers, compatible with the existing deep learning engines, like PyTorch, MXNet, and Tensorflow, and enables both model training and inference in Java. We will also use [ATLearn](https://github.com/awslabs/atlearn), an adaptive transfer learning toolkit, to edit and import the large pre-train model. ATLearn is a light weighted transfer learning toolkit, with various APIs, algorithms and model zoo, provided for python users. 
 
 The blogpost is structured as follows. 
 1. The data set and the problem formulation
