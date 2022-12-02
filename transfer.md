@@ -1,6 +1,11 @@
 # Blazing fast training with small dataset for Java applications
 
-Deep learning has shown its strong power in solving many problems in various areas like CV, NLP, reinforcement learning, etc, and there exists numerous examples of its successful applications. However, for a very specific customerized task, like rotten fruit detection in a grocery store, or mask wearing detection in a public place, there are still many challenges to face. For example, the training dataset suitable for the task is usually not available, while data collection and annotation can be expensive. Also training a model from scratch can be time consuming and face many uncertainties. In this blogpost, we will addresses the above two issues with transfer learning, and demonstrate it on rotten fruit detection task. Our result shows that the model can achieve 95% accuracy on image classification with less than 100 images. You will learn how this is achieved in the next 10 minutes.
+Deep learning has shown its strong power in solving problems in various areas like CV, NLP, reinforcement learning, etc., which generates numerous examples of successful applications. However, for a very specific customerized task, like rotten fruit detection in a grocery store, or mask wearing detection in a public place, there are still many challenges to face, including the following two:
+1. The training dataset suitable for the task is usually not immediately available, while data collection and annotation can be expensive. 
+2. Training a model from scratch can be time consuming and may face many uncertainties. 
+
+In this blogpost, we will address the above two issues with **transfer learning**, and demonstrate it on a rotten fruit detection task. Our result shows that the model can achieve **95%** accuracy on image classification with less than **100** images. We will also show how easily this is implemented in Java environment.
+You will learn how this is achieved in the next 10 minutes.
 
 <!-- You will learn how to benifit from the large pretrained models in your Java applications in 10 minutes. -->
 
@@ -8,7 +13,7 @@ Deep learning has shown its strong power in solving many problems in various are
 
 <!-- Transfer learning has a broad variaty of applications, including general game playing, text classification, medical imaging, spam filtering, and many more. In this blogpost, we will demonstrate the transfer learnig tool package with an image classification task, a generic task in computer vision. We will also introduce two frameworks: Deep Java Library (DJL) and ATLearn. -->
 
-In this demonstration, dataset is composed of pictures with one fruit in it, either fresh or rotten. So we formulate the task as a 2-class classification problem. This task has a potential application in grocery store in building automatic rotten fruit detection. To solve this problem, we will use the transfer learning feature in DeepJavaLibrary ([DJL](https://github.com/deepjavalibrary/djl)). DJL is a deep learning library designed for Java developers, compatible with the existing deep learning engines, like PyTorch, MXNet, and Tensorflow, and enables both model training and inference in Java. We will also use [ATLearn](https://github.com/awslabs/atlearn) to edit and import the large pre-train model. ATLearn is a lightweighted transfer learning toolkit, with various APIs, algorithms and model zoo, provided for python users. 
+To solve the issues mentioned above, we will use the transfer learning feature in DeepJavaLibrary ([DJL](https://github.com/deepjavalibrary/djl)). DJL is a deep learning library designed for Java developers, compatible with the existing deep learning engines, like PyTorch, MXNet, and Tensorflow, and enables both model training and inference in Java. We will also use [ATLearn](https://github.com/awslabs/atlearn) to edit and import the large pre-train model. ATLearn is a light weighted transfer learning toolkit, with various APIs, algorithms and model zoo, provided for python users. 
 
 <!-- [DJL](https://github.com/deepjavalibrary/djl) is a deep learning framework designed for Java developers. It is compatible with the existing popular deep learning engines, like PyTorch, MXNet, and Tensorflow, and enables users to easily train and deploy deep learning models in their Java application. So the transfer learning package introduced here make it possible for the Java developers to directly benifit from the large models pre-trained in python. -->
 
@@ -17,16 +22,17 @@ In this demonstration, dataset is composed of pictures with one fruit in it, eit
 <!-- A by-product of this transfer learning feature is that the model retraining, which allows model to improve and be fine-tuned with new data. This will be mentioned in the following. -->
 
 The blogpost is structured as follows. 
-1. The the data set
+1. The data set and the problem formulation
 1. The transfer learning model
-1. The demonstration of tranfer learning in Java
+1. The demonstration of transfer learning in Java
 1. Experiment on the reduction of the training data size
 
-<!-- Here, we demenstrate the transfer learning feature in PyTorch. But the feature on MXNet engine is also available. -->
-The full source code is availabe [here](https://github.com/deepjavalibrary/djl/blob/master/examples/src/main/java/ai/djl/examples/training/transferlearning/TransferFreshFruit.java). 
+The full source code is available [here](https://github.com/deepjavalibrary/djl/blob/master/examples/src/main/java/ai/djl/examples/training/transferlearning/TransferFreshFruit.java). 
 
-## The data set 
-In this blogpost, we demonstrate with the [fruit fresh and rotten dataset ](https://www.kaggle.com/datasets/sriramr/fruits-fresh-and-rotten-for-classification), which is publically available from Kaggle contest. Here are some examples of the image data.
+## The data set and the problem formulation
+In this blogpost, we demonstrate with the [fruit fresh and rotten dataset ](https://www.kaggle.com/datasets/sriramr/fruits-fresh-and-rotten-for-classification), which is publicly available from Kaggle contest. This dataset is composed of pictures with one fruit in it, either fresh or rotten. So, the task of detecting the rotten fruit can be formulated as a 2-class classification problem. This task has a potential application in grocery store in building automatic rotten fruit detection. 
+
+Here are some examples of the image data.
 <figcaption>Fresh/rotten banana dataset:<figcaption>
 <img src="./banana_data.jpg" width="500">
 
@@ -36,7 +42,7 @@ In this blogpost, we demonstrate with the [fruit fresh and rotten dataset ](http
 It is then clear that the fruit images indeed have enough visual variation distinguishable for a classifier model. 
 
 ## The transfer learning model
-The model is built based on transfer learning. Specific to this problem, we will first use a large pre-trained model to get an embedding vector. Then the embedding vector is fed into the subsequent fully connected layer followed by a softmax activation function. Thus, through transfer learing, users can benifit from the large pre-trained model and solve their own customized problem.
+Based on transfer learning, the model is built on top of a large pre-trained model, which is used to get an embedding vector. Then the embedding vector is fed into the subsequent fully connected layer followed by a softmax activation function. Thus, through transfer learing, users can benifit from the large pre-trained model and solve their own customized problem.
 
 <!-- Transfer learning is a popular technique that focuses on storing knowledge gained in solving one problem and applying it to a different but related problem. -->
 <!-- Specific to this problem, the implementation is to use a large pre-trained model to get an embedding vector, which can be thought of as a representation of the data. Then the embedding vector is fed into the subsequent models. Thus, through transfer learing, users can benifit from the large pre-trained model and solve their own customized problem. -->
@@ -88,7 +94,7 @@ model = ATLearn.get_embedding(ATLearn.task.IMAGE_CLASSIFICATION,
 
 ``` -->
 
-**Load the embedding in DJL and build the model.** As mentioned before, we have generated an embedding layer from ATLearn. Now we can load it into DJL. It is also available at `modelUrl = "djl://ai.djl.pytorch/resnet18_embedding"`. In DJL, the model loading is implemented with the `criteria` API, which serves as the criteria to search for models. It also offers several options to configure the model. Among them, `trainParam` is an option sepecific for transfer learning (or model retraining). Setting it "false" will freeze the parameter in the loaded embedding layer (or model), and "true" will be the other way around.
+**Load the embedding in DJL and build the model.** As mentioned before, we have generated an embedding layer from ATLearn. Now we can load it into DJL. This embedding layer is also available at `modelUrl = "djl://ai.djl.pytorch/resnet18_embedding"`. In DJL, the model loading is implemented with the `criteria` API, which serves as the criteria to search for models. It offers several options to configure the model. Among them, `trainParam` is an option sepecific for transfer learning (or model retraining). Setting it "false" will freeze the parameter in the loaded embedding layer (or model), and "true" will be the other way around.
 ```java
 String modelUrl = "/EXPORT_PATH/resnet18_embedding.pt";
 Criteria<NDList, NDList> criteria =
@@ -141,7 +147,7 @@ private static DefaultTrainingConfig setupTrainingConfig(Block baseBlock) {
 
  <!-- Also, during training, we will asign different learning rates on these two layers: the learning rate of the embedding layer is 10 times smaller than that of the FC layer. Thus, the pretrained parameters in the embedding layer is not changed too much. -->
 
-At this step, we will asign different learning rates on these two layers: the learning rate of the embedding layer is 10 times smaller than that of the FC layer. Thus, the pretrained parameters in the embedding layer is not changed too much. This asignment of learning rate is specified with `learningRateTracker`, which is then fed into the learningRateTracker opition in `Optimizer`, as shown below.
+At this step, we will asign different learning rates on these two layers: the learning rate of the embedding layer is 10 times smaller than that of the FC layer. Thus, the pretrained parameters in the embedding layer is not changed too much. This asignment of learning rate is specified with `learningRateTracker`, which is then fed into the `learningRateTracker` option in `Optimizer`, as shown below.
  ```java
 // Customized learning rate
 float lr = 0.001f;
@@ -159,13 +165,12 @@ After this step, a training configuration is returned by `setupTrainingConfig` f
 ```java
 Trainer trainer = model.newTrainer(config);
 ``` 
-Next, the trainer is initialized by 
+Next, the trainer is initialized by the following code, where the parameters' shape and initial value in each blocks will be specified. The `inputShape` has to be known beforehand.
 ```java
 int batchSize = 32;
 Shape inputShape = new Shape(batchSize, 3, 224, 224);
 trainer.initialize(inputShape);
 ```
-At this step, the parameters' shape and initial value in each blocks will be specified. Here the `inputShape` has to be known beforehand.
 
 **Data loading.** The data is loaded and preprocessed with the following function.
 ```java
@@ -217,7 +222,7 @@ Here, you can monitor the training and validation accuracy and loss descent.
 <!-- The complete **source code** of the demo is available [here](https://github.com/deepjavalibrary/djl/blob/master/examples/src/main/java/ai/djl/examples/training/transferlearning/TransferFreshFruit.java). -->
 
 ### Experiment on the reduction of the training data size
-As mentioned in the introduction, the key advantage of transfer learning is that it leverage the pretrained model, and thus it can be trained on a relatively small dataset. This will save the cost in data collection and annotation. In this section, we measure the validation accuracy v.s. training data size on the FreshFruit dataset. The full experiment code is availale [here](https://gist.github.com/KexinFeng/d9c0a244d0597e6c6e161c1c1c2db569).
+The key advantage of transfer learning is that it leverage the pretrained model, and thus it can be trained on a relatively small dataset. This will save the cost in data collection and annotation. In this section, we measure the validation accuracy v.s. training data size on the `FreshFruit` dataset. The full experiment code is availale [here](https://gist.github.com/KexinFeng/d9c0a244d0597e6c6e161c1c1c2db569).
 
 In this experiment, the training dataset size needs to be controlled and randomly chosen. This part is implemented as below, where `cut` is the size of the training data.
 <!-- The minor difference between the experiment code and the demonstration code above is the control over the training data size and randomization of the chosen subdataset. It is implemented below. `cut` is the size of the training data. -->
@@ -244,9 +249,9 @@ The result of validation accuracy v.s. training data size is below.
 Here, we have tested two scenarios: freeze ResNet layers and update only MLP and update all layers. As expected, the stable accuracy of latter is slightly better than that of the former, since the ResNet parameter is also fine-tuned by the data. We can also see that the accuracy of the banana data reaches stable 0.95 with 30 samples, the accuracy of the apple data reaches stable 0.95 with around 70 samples. They are both relatively smaller than the provided training data size by Kaggle, which is over 1000. This verifies that, indeed the required training dataset is small. When people need to collect and annotate data, this offers a reference on the minimum required data size. 
 
 ## Summary
-In this blogpost, we demonstrate how to build a transfer leanring model in DJL for an image classification task. This process is also applicable in model retraining. Finally, we also present the experiment on how much the training data set can be reduced. The direct benifit of the reduced is that it helps to save the expensive data collection and annotation cost. This will make it much easier to apply large pretrained models to solve various small tasks, like mask wearing detection, special icon detection etc., where training data set is usually not available. 
+In this blogpost, we demonstrate how to build a transfer leanring model in DJL for an image classification task. This process is also applicable in model retraining. Finally, we also present the experiment on how much the training data set can be reduced. The direct benifit of the reduced is that it helps to save the expensive data collection and annotation cost. This makes it much easier to leverage the large pretrained models to solve other various tasks with small dataset.
 
-This demenstration can also be easily applied to other similar tasks and data, like [mask wearing detection](https://www.kaggle.com/datasets/andrewmvd/face-mask-detection?select=images) and [fruit freshness regression](https://www.kaggle.com/datasets/dcsyanwq/fuit-freshness). See examples in [ATLearn](https://github.com/awslabs/atlearn) for their implementation in python, as well as other examples of object detection.
+This demenstration is similarly applied to other tasks and data, like [mask wearing detection](https://www.kaggle.com/datasets/andrewmvd/face-mask-detection?select=images) and [fruit freshness regression](https://www.kaggle.com/datasets/dcsyanwq/fuit-freshness). See examples in [ATLearn](https://github.com/awslabs/atlearn) for their implementation in python, as well as other examples of object detection.
 
 
 
