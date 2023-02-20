@@ -12,11 +12,19 @@ The package contains the following two major features.
 2. It contains training features, so that users can directly build and modify timeseries deep learning models in DJL within Java envinronment. 
 
 In the following, we will demonstrate these features with [M5 Forecasting](https://www.kaggle.com/c/m5-forecasting-accuracy) data. We will also use the [airpassenger](https://ts.gluon.ai/stable/index.html) data to benchmark the pretrained model loaded from gluonTS. The blog is structured as follows. 
-1. M5 Forecasting dataset and task
-2. DeepAR model
-3. Inference feature: inference with pretrained DeepAR model. 
-4. Training feature: build and train your own DeepAR model
-5. Summary
+1. A simple demonstration with airpassenger data
+2. M5 Forecasting dataset
+3. DeepAR model
+4. Inference feature: inference with pretrained DeepAR model. 
+5. Training feature: build and train your own DeepAR model
+6. Summary
+
+## A simple demonstration with airpassenger data
+We start with a simple demonstration of the DeepAR model applied on the [airpassenger data](https://resources.djl.ai/test-models/mxnet/timeseries/air_passengers.json), to get a sense of its performance. The dataset consists of a single time series, containing monthly international passengers between the years 1949 and 1960, a total of 144 values (12 years * 12 months). The model is pretrained in [gluonTS](https://ts.gluon.ai/stable/getting_started/models.html) and then directly loaded into DJL.  The source code is [here](https://github.com/deepjavalibrary/djl/blob/master/examples/src/main/java/ai/djl/examples/inference/timeseries/AirPassengersDeepAR.java).
+
+The result is shown in the graph below. It has the same performance as shown in [gluonTS website](https://ts.gluon.ai/stable/index.html). We can see the historical pattern is effectively learned as manifested in its forecast. Next, you will see how to easily apply this model on a more realistic data in M5 forecasting task.
+
+<img src="https://user-images.githubusercontent.com/60054018/193000269-0b73c95b-5088-405c-aa95-f121d384ff08.png" width="800" />
 
 ## M5 Forecasting dataset
 
@@ -328,17 +336,6 @@ Training:     30% |=============                           | RMSSE: 1.43, Loss: 
 
 The **java source code** of this training example is [TrainTimeSeries.java](https://github.com/deepjavalibrary/djl/blob/master/examples/src/main/java/ai/djl/examples/training/TrainTimeSeries.java).
 For your reference, the counterpart **python source code** for training is also available in [5torch.py](https://gist.github.com/Carkham/a5162c9298bc51fec648a458a3437008#file-m5torch-py)
-
-## Demonstration with airpassenger data
-
-In this section, we show the forecasting performance of DeepAR model on the [airpassenger data](https://resources.djl.ai/test-models/mxnet/timeseries/air_passengers.json). The model is again pretrained in [gluonTS](https://ts.gluon.ai/stable/getting_started/models.html) and then directly loaded into DJL. 
-
-The result is shown in the graph below. It has the same performance as shown in [gluonTS website](https://ts.gluon.ai/stable/index.html).
-
-<img src="https://user-images.githubusercontent.com/60054018/193000269-0b73c95b-5088-405c-aa95-f121d384ff08.png" width="800" />
-
-
-The code is parallel to the inference with M5 forecasting data, which will not be repeated here. The source code is [here](https://github.com/deepjavalibrary/djl/blob/master/examples/src/main/java/ai/djl/examples/inference/timeseries/AirPassengersDeepAR.java).
 
 ## Summary
 In this blogpost, we have shown the DJL timeseries package with [M5 Forecasting data](https://github.com/deepjavalibrary/djl/blob/master/examples/src/main/java/ai/djl/examples/inference/timeseries/M5ForecastingDeepAR.java). We focuse on the inference feature, but the training feature is also available [here](https://github.com/deepjavalibrary/djl/blob/master/examples/src/main/java/ai/djl/examples/training/TrainTimeSeries.java), where you can build your own timeseries model in DJL. With these features in DJL, now users can start mining the timeseriese data conveniently in Java.
