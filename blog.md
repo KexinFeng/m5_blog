@@ -331,8 +331,8 @@ After you have completed the above process, you will see the following informati
 Training:     30% |=============                           | RMSSE: 1.43, Loss: 2.42, speed: 443.11 items/sec
 ```
 
-The **source code** of this training example is [here](https://github.com/deepjavalibrary/djl/blob/master/examples/src/main/java/ai/djl/examples/training/TrainTimeSeries.java).
-
+The **java source code** of this training example is [TrainTimeSeries.java](https://github.com/deepjavalibrary/djl/blob/master/examples/src/main/java/ai/djl/examples/training/TrainTimeSeries.java).
+For your reference, the counterpart **python source code** for training is also available in [5torch.py](https://gist.github.com/Carkham/a5162c9298bc51fec648a458a3437008#file-m5torch-py)
 
 ## Demonstration with airpassenger data
 
